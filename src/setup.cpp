@@ -23,10 +23,15 @@ scalar calculateCoNum(const surfaceScalarField& phi)
     const fvMesh& mesh = phi.mesh();
     const Time& runTime = mesh.time();
     scalarField sumPhi(fvc::surfaceSum(mag(phi))().primitiveField());
+    for(int i = 0; i < sumPhi.size(); ++i)
+    {
+	std::cout << "sumPhi " << sumPhi[i] << " " << i << std::endl;
+	//std::cout << "Vol " << mesh.V().field()[i] << " " << i << std::endl;
+    }
     scalar coNum = 0.5 * gMax(sumPhi / mesh.V().field()) * runTime.deltaTValue();
     scalar meanCoNum = 0.5 * (gSum(sumPhi) / gSum(mesh.V().field())) * runTime.deltaTValue();
 
-    Info << "Courant Number mean: " << meanCoNum << " max: " << coNum << endl;
+    Info << "Courant Number mean: " << meanCoNum << " max: " << coNum << " " << runTime.deltaTValue() << endl;
     return coNum;
 }
 
