@@ -3,12 +3,8 @@
 
 #include "NeoFOAM/NeoFOAM.hpp"
 
-#include "NeoFOAM/setup.hpp"
-
 #include "FoamAdapter/FoamAdapter.hpp"
 #include "FoamAdapter/readers/foamDictionary.hpp"
-
-#include <chrono>
 
 #define namespaceFoam
 #include "fvCFD.H"
@@ -76,7 +72,7 @@ int main(int argc, char* argv[])
                 }
             );
         auto nfPhi0 = Foam::constructSurfaceField(exec, nfMesh, phi0);
-	fvcc::SurfaceField<NeoFOAM::scalar> nfPhi = Foam::constructSurfaceField(exec, nfMesh, phi);
+        auto nfPhi = Foam::constructSurfaceField(exec, nfMesh, phi);
 
         Foam::scalar endTime = controlDict.get<Foam::scalar>("endTime");
 
@@ -97,12 +93,7 @@ int main(int argc, char* argv[])
 
 
             std::tie(adjustTimeStep, maxCo, maxDeltaT) = timeControls(runTime);
-    auto start = std::chrono::system_clock::now();
-	    coNum = fvcc::computeCoNum(nfPhi, dt);
-    auto end = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed_seconds = end - start;
-    std::cout << "Outside elapsed time: " << elapsed_seconds.count() << "s\n";
-            coNum = calculateCoNum(phi);
+            coNum = fvcc::computeCoNum(nfPhi, dt);
             Foam::Info << "max(phi) : " << max(phi).value() << Foam::endl;
             Foam::Info << "max(U) : " << max(U).value() << Foam::endl;
             if (adjustTimeStep)
